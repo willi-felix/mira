@@ -143,8 +143,8 @@ def generate_short_code():
                     db_manager.return_connection(conn)
     raise Exception("Exhausted all possibilities up to length 10")
 
-@app.route('/')
-def index():
+@app.route('/', endpoint='home')
+def home():
     return render_template("index.html")
 
 @app.route('/api/shorten', methods=['POST'])
