@@ -19,14 +19,14 @@ class DatabaseManager:
         self.db_url = "sqlitecloud://cuavg1yfnz.g2.sqlite.cloud:8860/filin.sqlite?apikey=padSix0bECiV7bqbOiEa9NRkbd8ms8OhFwiG2bZhiFM"
         self.pool_lock = threading.Lock()
         self.connection_pool = []
-        self.max_connections = 5
+        self.max_connections = float('inf')
         self.ensure_table_schema()
     def ensure_table_schema(self):
-    with sqlitecloud.connect(self.db_url) as conn:
-        cursor = conn.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS api (api TEXT PRIMARY KEY, type TEXT NOT NULL)")
-        cursor.execute("CREATE TABLE IF NOT EXISTS link (shorten_id TEXT PRIMARY KEY, long_url TEXT NOT NULL, click_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)")
-        conn.commit()
+        with sqlitecloud.connect(self.db_url) as conn:
+            cursor = conn.cursor()
+            cursor.execute("CREATE TABLE IF NOT EXISTS api (api TEXT PRIMARY KEY, type TEXT NOT NULL)")
+            cursor.execute("CREATE TABLE IF NOT EXISTS link (shorten_id TEXT PRIMARY KEY, long_url TEXT NOT NULL, click_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)")
+            conn.commit()
     def get_connection(self):
         with self.pool_lock:
             if self.connection_pool:
