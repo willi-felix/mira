@@ -8,7 +8,7 @@ import ipaddress
 from datetime import datetime
 from urllib.parse import urlparse
 from functools import wraps
-from flask import Flask, request, jsonify, redirect
+from flask import Flask, request, jsonify, redirect, render_template
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlitecloud://cuavg1yfnz.g2.sqlite.cloud:8860/filin.sqlite?apikey=padSix0bECiV7bqbOiEa9NRkbd8ms8OhFwiG2bZhiFM'
@@ -143,6 +143,10 @@ def generate_short_code():
                     db_manager.return_connection(conn)
     raise Exception("Exhausted all possibilities up to length 10")
 
+@app.route('/')
+def index():
+    return render_template("index.html")
+    
 @app.route('/api/shorten', methods=['POST'])
 @require_api_key
 def shorten_url():
