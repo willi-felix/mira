@@ -25,7 +25,13 @@ class DatabaseManager:
         with sqlitecloud.connect(self.db_url) as conn:
             cursor = conn.cursor()
             cursor.execute("CREATE TABLE IF NOT EXISTS api (api TEXT PRIMARY KEY, type TEXT NOT NULL)")
-            cursor.execute("CREATE TABLE IF NOT EXISTS link (shorten_id TEXT PRIMARY KEY, long_url TEXT NOT NULL, click_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)")
+            cursor.execute("CREATE TABLE IF NOT EXISTS link (shorten_id TEXT PRIMARY KEY, long_url TEXT NOT NULL)")
+            cursor.execute("PRAGMA table_info(link)")
+            columns = [row[1] for row in cursor.fetchall()]
+            if "click_count" not in columns:
+                cursor.execute("ALTER TABLE link ADD COLUMN click_count INTEGER DEFAULT 0")
+            if "created_at" not in columns:
+                cursor.execute("ALTER TABLE link ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP")
             conn.commit()
     def get_connection(self):
         with self.pool_lock:
@@ -146,7 +152,7 @@ def generate_short_code():
 @app.route('/')
 def index():
     return render_template("index.html")
-    
+
 @app.route('/api/shorten', methods=['POST'])
 @require_api_key
 def shorten_url():
@@ -212,6 +218,10 @@ def delete_link(shorten_id):
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({"status": "ok"}), 200
+
+@app.route('/')
+def index():
+    return render_template("index.html")
 
 if __name__ == '__main__':
     app.run(debug=True)
