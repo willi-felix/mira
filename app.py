@@ -8,7 +8,7 @@ import ipaddress
 from datetime import datetime
 from urllib.parse import urlparse
 from functools import wraps
-from flask import Flask, request, jsonify, redirect, render_template
+from flask import Flask, request, jsonify, redirect
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlitecloud://cuavg1yfnz.g2.sqlite.cloud:8860/filin.sqlite?apikey=padSix0bECiV7bqbOiEa9NRkbd8ms8OhFwiG2bZhiFM'
@@ -142,11 +142,7 @@ def generate_short_code():
                 finally:
                     db_manager.return_connection(conn)
     raise Exception("Exhausted all possibilities up to length 10")
-    
-@app.route('/')
-def index():
-    return render_template("index.html")
-    
+
 @app.route('/api/shorten', methods=['POST'])
 @require_api_key
 def shorten_url():
@@ -166,7 +162,7 @@ def shorten_url():
         conn.commit()
     finally:
         db_manager.return_connection(conn)
-    return jsonify({"short_url": f"https://filin.fyi/{short_code}"}), 201
+    return jsonify({"short_url": f"https://go.is-app.top/{short_code}"}), 201
 
 @app.route('/<shorten_id>', methods=['GET'])
 def redirect_url(shorten_id):
