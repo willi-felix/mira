@@ -50,8 +50,8 @@ api_usage = {}
 
 def check_rate_limit(api_key, api_type):
     now = time.time()
-    limits = {"developer": {"minute": 5, "hour": 50, "day": 500}, "production": {"minute": 25, "hour": 250, "day": 500}, "admin": {"minute": None, "hour": None, "day": None}}
-    if api_type == "admin":
+    limits = {"developer": {"minute": 5, "hour": 50, "day": 500}, "production": {"minute": 25, "hour": 250, "day": 500}, "enterprise": {"minute": None, "hour": None, "day": None}}
+    if api_type == "enterprise":
         return True
     if api_key not in api_usage:
         api_usage[api_key] = {"minute": {"count": 0, "reset": now + 60}, "hour": {"count": 0, "reset": now + 3600}, "day": {"count": 0, "reset": now + 86400}}
@@ -143,8 +143,8 @@ def generate_short_code():
                     db_manager.return_connection(conn)
     raise Exception("Exhausted all possibilities up to length 10")
 
-@app.route('/', endpoint='home')
-def home():
+@app.route('/')
+def index():
     return render_template("index.html")
 
 @app.route('/api/shorten', methods=['POST'])
