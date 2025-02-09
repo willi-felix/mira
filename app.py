@@ -25,7 +25,7 @@ class DatabaseManager:
         with sqlitecloud.connect(self.db_url) as conn:
             cursor = conn.cursor()
             cursor.execute("CREATE TABLE IF NOT EXISTS api (api TEXT PRIMARY KEY, type TEXT NOT NULL)")
-            cursor.execute("CREATE TABLE IF NOT EXISTS link (shorten_id TEXT PRIMARY KEY, long_url TEXT NOT NULL)")
+            cursor.execute("CREATE TABLE IF NOT EXISTS link (shorten_id TEXT PRIMARY KEY, long_url TEXT NOT NULL, click_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)")
             conn.commit()
     def get_connection(self):
         with self.pool_lock:
@@ -50,19 +50,11 @@ api_usage = {}
 
 def check_rate_limit(api_key, api_type):
     now = time.time()
-    limits = {
-        "developer": {"minute": 5, "hour": 50, "day": 500},
-        "production": {"minute": 25, "hour": 250, "day": 500},
-        "admin": {"minute": None, "hour": None, "day": None}
-    }
+    limits = {"developer": {"minute": 5, "hour": 50, "day": 500}, "production": {"minute": 25, "hour": 250, "day": 500}, "admin": {"minute": None, "hour": None, "day": None}}
     if api_type == "admin":
         return True
     if api_key not in api_usage:
-        api_usage[api_key] = {
-            "minute": {"count": 0, "reset": now + 60},
-            "hour": {"count": 0, "reset": now + 3600},
-            "day": {"count": 0, "reset": now + 86400}
-        }
+        api_usage[api_key] = {"minute": {"count": 0, "reset": now + 60}, "hour": {"count": 0, "reset": now + 3600}, "day": {"count": 0, "reset": now + 86400}}
     usage = api_usage[api_key]
     for period, seconds in (("minute", 60), ("hour", 3600), ("day", 86400)):
         if now > usage[period]["reset"]:
@@ -118,15 +110,7 @@ def is_valid_url(url):
         return False
 
 def is_safe_url(url):
-    payload = {
-        "client": {"clientId": "filin", "clientVersion": "1.0"},
-        "threatInfo": {
-            "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
-            "platformTypes": ["ANY_PLATFORM"],
-            "threatEntryTypes": ["URL"],
-            "threatEntries": [{"url": url}]
-        }
-    }
+    payload = {"client": {"clientId": "filin", "clientVersion": "1.0"}, "threatInfo": {"threatTypes": ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"], "platformTypes": ["ANY_PLATFORM"], "threatEntryTypes": ["URL"], "threatEntries": [{"url": url}]}}
     response = requests.post("https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyBapgOJzBGyrJqui9eA1w_xfOawtCU7Q6Q", json=payload)
     if response.status_code == 200:
         data = response.json()
@@ -178,18 +162,46 @@ def shorten_url():
         conn.commit()
     finally:
         db_manager.return_connection(conn)
-    return jsonify({"short_url": f"https://go.is-app.top/{short_code}"}), 201
+    return jsonify({"short_url": f"https://filin.fyi/{short_code}"}), 201
 
 @app.route('/<shorten_id>', methods=['GET'])
 def redirect_url(shorten_id):
     conn = db_manager.get_connection()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT long_url FROM link WHERE shorten_id = ?", (shorten_id,))
+        cursor.execute("SELECT long_url, click_count FROM link WHERE shorten_id = ?", (shorten_id,))
         row = cursor.fetchone()
         if row:
+            cursor.execute("UPDATE link SET click_count = click_count + 1 WHERE shorten_id = ?", (shorten_id,))
+            conn.commit()
             return redirect(row[0])
         return jsonify({"error": "URL not found"}), 404
+    finally:
+        db_manager.return_connection(conn)
+
+@app.route('/api/info/<shorten_id>', methods=['GET'])
+@require_api_key
+def link_info(shorten_id):
+    conn = db_manager.get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT long_url, created_at, click_count FROM link WHERE shorten_id = ?", (shorten_id,))
+        row = cursor.fetchone()
+        if row:
+            return jsonify({"long_url": row[0], "created_at": row[1], "click_count": row[2]}), 200
+        return jsonify({"error": "URL not found"}), 404
+    finally:
+        db_manager.return_connection(conn)
+
+@app.route('/api/delete/<shorten_id>', methods=['DELETE'])
+@require_api_key
+def delete_link(shorten_id):
+    conn = db_manager.get_connection()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM link WHERE shorten_id = ?", (shorten_id,))
+        conn.commit()
+        return jsonify({"message": "Link deleted"}), 200
     finally:
         db_manager.return_connection(conn)
 
