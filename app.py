@@ -5,6 +5,7 @@ import random
 import time
 import requests
 import ipaddress
+import re
 from datetime import datetime
 from urllib.parse import urlparse
 from functools import wraps
@@ -133,6 +134,18 @@ def is_safe_url(url):
         return True
     return False
 
+def is_valid_alias_format(alias):
+    pattern = r'^[A-Za-z0-9_-]{3,15}$'
+    return re.match(pattern, alias) is not None
+
+def alias_exists(alias):
+    conn = db_manager.get_connection()
+    try:
+        result = conn.execute("SELECT 1 FROM link WHERE shorten_id = ?", (alias,))
+        return result.rows and len(result.rows) > 0
+    finally:
+        db_manager.return_connection(conn)
+
 def generate_short_code():
     characters = string.ascii_letters + string.digits
     for length in range(6, 11):
@@ -166,7 +179,15 @@ def shorten_url():
         return jsonify({"error": "Invalid URL format"}), 400
     if not is_safe_url(long_url):
         return jsonify({"error": "URL is flagged as unsafe"}), 400
-    short_code = generate_short_code()
+    custom_alias = data.get("alias")
+    if custom_alias:
+        if not is_valid_alias_format(custom_alias):
+            return jsonify({"error": "Invalid alias format"}), 400
+        if alias_exists(custom_alias):
+            return jsonify({"error": "Alias already exists"}), 409
+        short_code = custom_alias
+    else:
+        short_code = generate_short_code()
     conn = db_manager.get_connection()
     try:
         conn.execute("INSERT INTO link (shorten_id, long_url) VALUES (?, ?)", (short_code, long_url))
@@ -210,6 +231,10 @@ def delete_link(shorten_id):
         return jsonify({"message": "Link deleted"}), 200
     finally:
         db_manager.return_connection(conn)
+
+@app.route('/api/version', methods=['GET'])
+def api_version():
+    return jsonify({"api_version": "v1"}), 200
 
 @app.route('/health', methods=['GET'])
 def health():
