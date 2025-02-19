@@ -100,8 +100,8 @@ def is_internal_url(url):
 def check_rate_limit(api_key, api_type):
     now = time.time()
     base_limits = {
-        "developer": {"minute": 5, "hour": 50, "day": 500},
-        "production": {"minute": 25, "hour": 250, "day": 500},
+        "developer": {"minute": 5, "hour": 50, "day": 150},
+        "production": {"minute": 30, "hour": 150, "day": 500},
         "enterprise": {"minute": None, "hour": None, "day": None}
     }
     load = get_system_load()
@@ -353,7 +353,7 @@ def shorten_url():
             db_manager.return_connection(conn)
 
     executor.submit(db_insert).result()
-    return jsonify({"short_url": f"https://filin.fyi/{short_code}"}), 201
+    return jsonify({"short_url": f"https://filin.is-app.top/{short_code}"}), 201
 
 @app.route('/<shorten_id>', methods=['GET'])
 def redirect_url(shorten_id):
