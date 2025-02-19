@@ -11,11 +11,5 @@
       "src": "/(.*)",
       "dest": "app.py"
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/:shorten_id",
-      "destination": "https://api.filin.is-app.top/:shorten_id"
-    }
   ]
 }
