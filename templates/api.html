@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">API Documentation</h2>
+<p>Use our API to shorten URLs programmatically. Here is an example endpoint:</p>
+<pre><code>POST https://filin.fyi/api/shorten
+Headers:
+  Content-Type: application/json
+  X-API-Key: <p>your_api_key</p>
+Body:
+  {
+    "url": "https://example.com",
+    "alias": "customAlias",          // optional
+    "password": "optionalPassword",  // optional
+    "max_clicks": 0,                 // optional, 0 means unlimited
+    "expire_at": "2025-12-31T23:59:59" // optional, ISO8601 format
+  }
+</code></pre>
+<p>The API will return a JSON object containing the shortened URL.</p>
+{% endblock %}
