@@ -84,7 +84,9 @@
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+GNU General Public License v3.0. See [LICENSE](LICENSE).
+
+> **Note:** The GPL license allows you to use, modify, and deploy MiraURL for private/internal purposes without any requirement to distribute your modifications. You are only required to make source code available if you distribute MiraURL (or a derivative work) to others outside your organization/private use.
 
 ---
 
