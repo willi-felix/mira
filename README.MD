@@ -2,7 +2,7 @@
 
 **MiraURL** is a modern, open-source, self-hosted link shortener for individuals, teams, and organizations. It provides secure, easy, and powerful link management with a beautiful dashboard and advanced features.
 
-![MiraURL Dashboard Screenshot](https://i.ibb.co/gh3sZrq/Mira-URL-1-1.png)
+![MiraURL Dashboard Screenshot](https://i.ibb.co/dJWyx4Ps/Mira-URL-capture.png)
 
 ## Features
 
@@ -21,8 +21,8 @@
 
 1. **Clone the repository**
     ```bash
-    git clone https://github.com/your-org/miraurl.git
-    cd miraurl
+    git clone https://github.com/miraurl/mira.git
+    cd mira
     ```
 
 2. **Install dependencies**
