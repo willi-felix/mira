@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ SITE_NAME }} - Mira Link Shortener Open Source</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 min-h-screen flex flex-col items-center justify-center">
+  <div class="w-full max-w-xl mx-auto p-8 rounded-3xl shadow-2xl bg-white mt-10">
+    <div class="mb-6 text-center">
+      <img src="https://i.ibb.co/gh3sZrq/Mira-URL-1-1.png" alt="Logo" class="w-24 h-24 mx-auto mb-4 rounded-full shadow-md border-4 border-green-100">
+      <h1 class="text-4xl font-extrabold text-green-700 tracking-wide">{{ SITE_NAME }}</h1>
+      <div class="text-green-600 font-mono mt-2 text-lg">{{ SITE_NAME }} uses Mira - Link Shortener Open Source</div>
+    </div>
+    <div class="space-y-6 mt-8">
+      <div>
+        <h2 class="font-semibold text-xl mb-2 text-green-800">What is Mira?</h2>
+        <p class="leading-relaxed text-gray-700">
+          <span class="font-bold text-green-700">Mira</span> is a modern, open-source, self-hosted link shortener for individuals, teams, and organizations. It provides secure, easy, and powerful link management with advanced features for everyone.
+        </p>
+      </div>
+      <ul class="list-disc ml-7 text-green-900 text-base font-medium space-y-1">
+        <li>Admin &amp; User management, role-based permission</li>
+        <li>Random or custom short links</li>
+        <li>Password protection, expiration, one-time links</li>
+        <li>Personal dashboard, user dashboard, analytics</li>
+        <li>RESTful async API for automation</li>
+        <li>Google Safe Browsing for security</li>
+        <li>Blacklist for domains</li>
+        <li>Email notification for account creation &amp; password reset</li>
+        <li>Beautiful pastel UI with Tailwind CSS</li>
+        <li>Easy PostgreSQL setup with <code>.env</code> configuration</li>
+      </ul>
+      <div class="flex justify-center mt-8">
+        <a href="/login/" class="px-8 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white font-bold rounded-xl shadow-lg text-lg transition">Login / Dashboard</a>
+      </div>
+      <div class="mt-4 text-center text-xs text-gray-400">
+        Open source. Made with <span class="text-red-400">&hearts;</span> for organizations, teams, and individuals.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

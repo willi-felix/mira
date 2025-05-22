@@ -1,0 +1,11 @@
+Flask
+Flask-Login
+psycopg2-binary
+asyncpg
+Flask_SQLAlchemy
+passlib[bcrypt]
+python-dotenv
+requests
+httpx
+jinja2
+email-validator
