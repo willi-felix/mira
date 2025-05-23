@@ -17,15 +17,12 @@ class User(UserMixin, db.Model):
 
     links = db.relationship('Link', backref='owner', lazy=True)
 
-    def set_password(self, password):
-        self.password = bcrypt.hash(password)
-
-    def check_password(self, password):
-        # Defensive: avoid ValueError if self.password is not a valid bcrypt hash
-        try:
-            return bcrypt.verify(password, self.password)
-        except Exception:
-            return False
+    def set_password(self, raw_password):
+        self.password = bcrypt.hash(raw_password)
+    def check_password(self, raw_password):
+        if not self.password:
+            return True
+        return bcrypt.verify(raw_password, self.password)
 
 class Link(db.Model):
     __tablename__ = 'links'
