@@ -26,6 +26,8 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
+    from api import api as api_blueprint
+    app.register_blueprint(api_blueprint)
 
     with app.app_context():
         db.create_all()
