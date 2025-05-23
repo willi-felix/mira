@@ -1,8 +1,9 @@
-Flask
+flask[async]
 Flask-Login
 psycopg2-binary
 asyncpg
 Flask_SQLAlchemy
+Flask-Migrate
 passlib[bcrypt]
 python-dotenv
 requests
