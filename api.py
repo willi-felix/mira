@@ -11,6 +11,8 @@ def get_api_user(request):
     api_key = request.headers.get("Authorization")
     if not api_key:
         return None
+    if api_key.startswith("Bearer "):
+        api_key = api_key[7:]
     return User.query.filter_by(api=api_key.strip()).first()
 
 @api.route("/links", methods=["POST"])
@@ -54,10 +56,11 @@ async def api_create_link():
         short_url=slug,
         long_url=long_url,
         owner_id=user.id,
-        password=password if password else None,
         expire=datetime.fromisoformat(expire) if expire else None,
         one_time=one_time
     )
+    if password:
+        link.set_password(password)
     db.session.add(link)
     db.session.commit()
     return jsonify({"short_url": slug, "long_url": long_url}), 201
